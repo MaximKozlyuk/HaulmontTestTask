@@ -1,7 +1,9 @@
 package com.haulmont.testtask.frontend;
 
 import com.haulmont.testtask.dao.PatientDao;
+import com.haulmont.testtask.domain.GenericObject;
 import com.haulmont.testtask.domain.Patient;
+import com.haulmont.testtask.frontend.editforms.PatientForm;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.BeanItemContainer;
@@ -37,8 +39,9 @@ public class MainUI extends  UI {
     private static final long serialVersionUID = 1L;
 
     private Grid grid = new Grid();
+
     private TextField searchPatient = new TextField();
-    private PatientForm patientForm = new PatientForm(this::updateList);
+    private PatientForm patientForm = new PatientForm(this::updatePatientsList);
 
     private PatientDao patientDao = PatientDao.get();
     private List<Patient> patients;
@@ -51,10 +54,10 @@ public class MainUI extends  UI {
         addHeader(layout);
 
         grid.setColumns("id", "name", "surname", "middleName", "phoneNum");
-        updateList(null);
+        updatePatientsList(null);
 
         // search functionality and create button
-        searchPatient.setInputPrompt("Search patient");
+        searchPatient.setInputPrompt("Search");
         searchPatient.addTextChangeListener(event -> grid.setContainerDataSource(
                 new BeanItemContainer<>(Patient.class,
                         patients.stream()
@@ -64,7 +67,7 @@ public class MainUI extends  UI {
         Button clearFilter = new Button(FontAwesome.TIMES);
         clearFilter.addClickListener(click -> {
             searchPatient.clear();
-            updateList(null);
+            updatePatientsList(null);
         });
 
         Button addBtn = new Button("Add");
@@ -72,7 +75,7 @@ public class MainUI extends  UI {
             grid.select(null);
             Patient newPatient = new Patient();
             newPatient.setId(-1);
-            patientForm.setPatient(newPatient);
+            patientForm.setPojo(newPatient);
         });
 
         CssLayout search = new CssLayout();
@@ -95,7 +98,7 @@ public class MainUI extends  UI {
                 patientForm.setVisible(false);
             } else {
                 Patient patient = (Patient) event.getSelected().iterator().next();
-                patientForm.setPatient(patient);
+                patientForm.setPojo(patient);
             }
         });
 
@@ -106,11 +109,7 @@ public class MainUI extends  UI {
 
     }
 
-    private void changeForm () {
-
-    }
-
-    public void updateList (Object o) {
+    private void updatePatientsList(Object o) {
         patients = patientDao.findAll();
         grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patients));
     }
@@ -120,7 +119,6 @@ public class MainUI extends  UI {
         HorizontalLayout headerLayout = new HorizontalLayout();
         headerLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
         headerLayout.addStyleName("header");
-        //headerLayout.setHeight(4, Unit.EM);
         headerLayout.setWidth(100, Unit.PERCENTAGE);
 
         Label title = new Label("<h2>Hospital viewer</h2>");
@@ -132,6 +130,16 @@ public class MainUI extends  UI {
         Button recipes = new Button("Recipes");
         Button docs = new Button("Doctors");
 
+        patients.addClickListener(event -> {
+
+        });
+        recipes.addClickListener(event -> {
+
+        });
+        docs.addClickListener(event -> {
+
+        });
+
         headerLayout.addComponent(patients);
         headerLayout.addComponent(recipes);
         headerLayout.addComponent(docs);
@@ -140,87 +148,17 @@ public class MainUI extends  UI {
 
     }
 
-    /*
-    Page.getCurrent().setTitle("Hospital home page");
+    class InterfaceGeneralizer<T extends GenericObject> {
 
-        VerticalLayout content = new VerticalLayout();
-        setContent(content);
-        addHeader(content);
+        private Class pojoType;
 
-        PatientCreator patientCreator = new PatientCreator();
-        content.addComponent(patientCreator);
+        public InterfaceGeneralizer(T pojo) {
+            pojoType = pojo.getClass();
+             //pojoType.getDeclaredFields()[0].getName()
+            grid.setColumns();
 
-        for (int i = 0; i < patients.size(); i++) {
-            content.addComponent(new PatientView(patients.get(i),patients.get(i).getId()));
         }
-     */
 
-//    private void addItemsGrid (AbstractLayout content) {
-//        grid.setHeightMode(HeightMode.ROW);
-//        grid.setWidth(100, Unit.PERCENTAGE);
-//        grid.setHeightUndefined();
-//        grid.setStyleName("items-grid");
-//        grid.setColumns("name", "surname", "middleName", "phoneNum");
-//
-//        grid.setSelectionMode(Grid.SelectionMode.SINGLE);
-//        //grid.setEditorBuffered(true);
-//        grid.setEditorEnabled(true);
-//        //grid.addListener(event -> Notification.show("!!!"));
-//
-//        BeanItemContainer<Patient> beanItemContainer = new BeanItemContainer<>(Patient.class, patients);
-//        grid.setContainerDataSource(beanItemContainer);
-//
-//        BeanFieldGroup beanFieldGroup = new BeanFieldGroup<>(Patient.class);
-//        //beanFieldGroup.setItemDataSource(data.get(0));
-//        beanFieldGroup.addCommitHandler(new FieldGroup.CommitHandler() {
-//            @Override
-//            public void preCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
-//                System.out.println("PRE COMMIT");
-//            }
-//
-//            @Override
-//            public void postCommit(FieldGroup.CommitEvent commitEvent) throws FieldGroup.CommitException {
-//                System.out.println("POST COMMIT");
-//                commitEvent.getFieldBinder().commit();
-//            }
-//        });
-//        grid.setEditorFieldGroup(beanFieldGroup);
-//
-//        content.addComponent(grid);
-//        updateGrid();
-//    }
-//
-//    private void updateGrid () {
-//        BeanItem<Patient> patientBean = new BeanItem<Patient>(PatientDaoImitation.getNPatients(1).get(0));
-//
-//        BeanItemContainer beanItemContainer = new BeanItemContainer<>(Patient.class, patients);
-//
-//        beanItemContainer.addPropertySetChangeListener((
-//                event -> {
-//                    System.out.println("addPropertySetChangeListener");
-//                    System.out.println(event);
-//                }
-//        ));
-//
-//        beanItemContainer.addItemSetChangeListener(event -> {
-//            System.out.println("addItemSetChangeListener:");
-//            Container container = event.getContainer();
-//            System.out.println(container.getItem(patients.get(0)));
-//        });
-//
-//        grid.setContainerDataSource(beanItemContainer);
-//    }
-//
-//    private void addTextField (AbstractLayout outerContent) {
-//        // text field example
-//        TextField tf = new TextField("Age");
-//        tf.setInputPrompt("Please enter age");
-//        tf.setImmediate(true);
-//        tf.setConverter(new StringToIntegerConverter());
-//        IntegerRangeValidator validator =
-//                new IntegerRangeValidator("Age must be below 100", 1, 99);
-//        tf.addValidator(validator);
-//        outerContent.addComponent(tf);
-//    }
+    }
 
 }

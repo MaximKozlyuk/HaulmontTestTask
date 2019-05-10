@@ -1,16 +1,20 @@
 package com.haulmont.testtask.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
 @Data
-public class Recipe implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class Recipe extends GenericObject implements Serializable {
 
     private long id;
 
-    private String descrition;
+    private String description;
     private Patient patient;
     private Doctor doctor;
     private LocalDate creation;

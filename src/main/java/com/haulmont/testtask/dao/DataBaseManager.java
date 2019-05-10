@@ -18,7 +18,6 @@ public class DataBaseManager {
     private JDBCDataSource ds;
     private Connection conn;
 
-
     private DataBaseManager() {
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
@@ -38,7 +37,7 @@ public class DataBaseManager {
         }
     }
 
-    public void executeCreationScript() {
+    private void executeCreationScript() {
         InputStream in;
         try {
             in = new FileInputStream("/Users/max/Desktop/test-task-master/src/main/resources/creation.sql");
@@ -65,7 +64,7 @@ public class DataBaseManager {
         }
     }
 
-    public Connection getConnection () {
+    Connection getConnection () {
         return conn;
     }
 

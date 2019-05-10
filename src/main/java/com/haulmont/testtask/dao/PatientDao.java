@@ -64,17 +64,6 @@ public class PatientDao {
         }
     }
 
-//    public void update (Patient patient) {
-//        try {
-//            PreparedStatement statement = con.prepareStatement(
-//                    "update PUBLIC.PATIENT set name=?, surname=?, middle_name=?, phone_num=?");
-//            setupStatement(statement,patient);
-//            statement.execute();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public void save (Patient patient) {
         System.out.println("Patient dao save: " + patient);
         try {
