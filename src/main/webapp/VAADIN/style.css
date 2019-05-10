@@ -1,0 +1,33 @@
+.header {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-bottom: 0.5em;
+    background-color: dodgerblue;
+    height: 5em;
+}
+
+.patient-view {
+    margin: 0.5em;
+    min-height: 2em;
+}
+
+.v-slot-item-number {
+    font-weight: bold;
+}
+
+
+/*.v-slot-items-grid {*/
+/*    height: 100%;*/
+/*}*/
+
+/*.v-grid-items-grid {*/
+/*    height: 100%;*/
+/*}*/
+
+/*.v-verticallayout-content {*/
+/*    height: 100%;*/
+/*}*/
+
+/*.vaadin-grid {*/
+/*    height: 100%;*/
+/*}*/
