@@ -17,4 +17,10 @@ public class Doctor extends Human implements Serializable {
         super(name, surname);
     }
 
+    public Doctor () {
+        super("", "");
+        setMiddleName("");
+        specialization = "";
+    }
+
 }

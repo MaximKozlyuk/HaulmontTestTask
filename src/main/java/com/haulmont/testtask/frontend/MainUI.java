@@ -1,20 +1,10 @@
 package com.haulmont.testtask.frontend;
 
-import com.haulmont.testtask.dao.PatientDao;
-import com.haulmont.testtask.domain.GenericObject;
-import com.haulmont.testtask.domain.Patient;
-import com.haulmont.testtask.frontend.editforms.PatientForm;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * + Отображение списка пациентов
@@ -38,110 +28,59 @@ public class MainUI extends  UI {
 
     private static final long serialVersionUID = 1L;
 
-    private Grid grid = new Grid();
+    private VerticalLayout layout = new VerticalLayout();
 
-    private TextField search = new TextField();
-    private PatientForm patientForm = new PatientForm(this::updatePatientsList);
+    private PatientView patientView = new PatientView();
+    private DoctorView doctorView;
 
-    private PatientDao patientDao = PatientDao.get();
-
-    private List<Patient> patients;
+    private ObjectView currentView = patientView;
 
     @Override
     protected void init(VaadinRequest request) {
 
-        VerticalLayout layout = new VerticalLayout();
-
         addHeader(layout);
 
-        grid.setColumns("id", "name", "surname", "middleName", "phoneNum");
-        updatePatientsList(null);
-
-        // search functionality and create button
-        search.setInputPrompt("Search");
-
-        search.addTextChangeListener(event -> grid.setContainerDataSource(
-                new BeanItemContainer<>(Patient.class,
-                        patients.stream()
-                        .filter(patient -> patient.toString().contains(event.getText()))
-                        .collect(Collectors.toList()))
-        ));
-
-        Button clearFilter = new Button(FontAwesome.TIMES);
-        clearFilter.addClickListener(click -> {
-            search.clear();
-            updatePatientsList(null);
-        });
-
-        Button addBtn = new Button("Add");
-        addBtn.addClickListener(event -> {
-            grid.select(null);
-            Patient newPatient = new Patient();
-            newPatient.setId(-1);
-            patientForm.setPojo(newPatient);
-        });
-
-        CssLayout search = new CssLayout();
-        search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        search.addComponents(this.search, clearFilter);
-
-        HorizontalLayout tools = new HorizontalLayout(search,addBtn);
-        tools.setSpacing(true);
-
-        //
-        HorizontalLayout body = new HorizontalLayout(grid,patientForm);
-        patientForm.setVisible(false);
-        body.setSpacing(true);
-        body.setSizeFull();
-        grid.setSizeFull();
-        body.setExpandRatio(grid,1);
-
-        grid.addSelectionListener(event -> {
-            if (event.getSelected().isEmpty()) {
-                patientForm.setVisible(false);
-            } else {
-                Patient patient = (Patient) event.getSelected().iterator().next();
-                patientForm.setPojo(patient);
-            }
-        });
-
-        layout.addComponents(tools, body);
+        layout.addComponent(patientView);
         layout.setMargin(true);
         layout.setSpacing(true);
         setContent(layout);
 
     }
 
-    private void updatePatientsList(Object o) {
-        patients = patientDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patientDao.findAll()));
-    }
-
     private void addHeader (AbstractOrderedLayout outerLayout) {
         Header header = new Header();
         header.getPatients().addClickListener(event -> {
-
+            currentView.setVisible(false);
+            currentView = patientView;
+            currentView.setVisible(true);
         });
         header.getRecipes().addClickListener(event -> {
 
         });
         header.getDocs().addClickListener(event -> {
-
+            currentView.setVisible(false);
+            if (doctorView == null ) {
+                doctorView = new DoctorView();
+                layout.addComponent(doctorView);
+            }
+            currentView = doctorView;
+            currentView.setVisible(true);
         });
         outerLayout.addComponent(header);
     }
 
-    class InterfaceGeneralizer<T extends GenericObject> {
-
-        private Class pojoType;
-
-        public InterfaceGeneralizer(T pojo) {
-            pojoType = pojo.getClass();
-             //pojoType.getDeclaredFields()[0].getName()
-            grid.setColumns();
-
-        }
-
-    }
-
 }
+
+
+//    class InterfaceGeneralizer<T extends GenericObject> {
+//
+//        private Class pojoType;
+//
+//        public InterfaceGeneralizer(T pojo) {
+//            pojoType = pojo.getClass();
+//             //pojoType.getDeclaredFields()[0].getName()
+//            grid.setColumns();
+//
+//        }
+//
+//    }

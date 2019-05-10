@@ -9,13 +9,14 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-abstract class Human extends GenericObject implements Serializable {
+class Human extends GenericObject implements Serializable {
 
     private String name;
     private String surname;
     private String middleName;
 
     Human(String name, String surname) {
+        super();
         this.name = name;
         this.surname = surname;
     }

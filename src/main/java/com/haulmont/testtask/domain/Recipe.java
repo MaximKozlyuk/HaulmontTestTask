@@ -21,4 +21,8 @@ public class Recipe extends GenericObject implements Serializable {
     private int expired;    // days amount of recipe validity
     private Priority priority;
 
+    public Recipe() {
+        super();
+    }
+
 }
