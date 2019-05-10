@@ -84,13 +84,6 @@
             <version>4.13-beta-1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-jdbc</artifactId>-->
-<!--            <version>5.1.6.RELEASE</version>-->
-<!--        </dependency>-->
-
     </dependencies>
 
 <!--    <dependencyManagement>-->

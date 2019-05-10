@@ -40,10 +40,11 @@ public class MainUI extends  UI {
 
     private Grid grid = new Grid();
 
-    private TextField searchPatient = new TextField();
+    private TextField search = new TextField();
     private PatientForm patientForm = new PatientForm(this::updatePatientsList);
 
     private PatientDao patientDao = PatientDao.get();
+
     private List<Patient> patients;
 
     @Override
@@ -57,16 +58,18 @@ public class MainUI extends  UI {
         updatePatientsList(null);
 
         // search functionality and create button
-        searchPatient.setInputPrompt("Search");
-        searchPatient.addTextChangeListener(event -> grid.setContainerDataSource(
+        search.setInputPrompt("Search");
+
+        search.addTextChangeListener(event -> grid.setContainerDataSource(
                 new BeanItemContainer<>(Patient.class,
                         patients.stream()
-                                .filter(patient -> patient.toString().contains(event.getText()))
-                                .collect(Collectors.toList()))
+                        .filter(patient -> patient.toString().contains(event.getText()))
+                        .collect(Collectors.toList()))
         ));
+
         Button clearFilter = new Button(FontAwesome.TIMES);
         clearFilter.addClickListener(click -> {
-            searchPatient.clear();
+            search.clear();
             updatePatientsList(null);
         });
 
@@ -80,7 +83,7 @@ public class MainUI extends  UI {
 
         CssLayout search = new CssLayout();
         search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
-        search.addComponents(searchPatient, clearFilter);
+        search.addComponents(this.search, clearFilter);
 
         HorizontalLayout tools = new HorizontalLayout(search,addBtn);
         tools.setSpacing(true);
@@ -111,41 +114,21 @@ public class MainUI extends  UI {
 
     private void updatePatientsList(Object o) {
         patients = patientDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patients));
+        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patientDao.findAll()));
     }
 
     private void addHeader (AbstractOrderedLayout outerLayout) {
-
-        HorizontalLayout headerLayout = new HorizontalLayout();
-        headerLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-        headerLayout.addStyleName("header");
-        headerLayout.setWidth(100, Unit.PERCENTAGE);
-
-        Label title = new Label("<h2>Hospital viewer</h2>");
-        title.addStyleName("site-title");
-        title.setContentMode(ContentMode.HTML);
-        headerLayout.addComponent(title);
-
-        Button patients = new Button("Patients");
-        Button recipes = new Button("Recipes");
-        Button docs = new Button("Doctors");
-
-        patients.addClickListener(event -> {
+        Header header = new Header();
+        header.getPatients().addClickListener(event -> {
 
         });
-        recipes.addClickListener(event -> {
+        header.getRecipes().addClickListener(event -> {
 
         });
-        docs.addClickListener(event -> {
+        header.getDocs().addClickListener(event -> {
 
         });
-
-        headerLayout.addComponent(patients);
-        headerLayout.addComponent(recipes);
-        headerLayout.addComponent(docs);
-
-        outerLayout.addComponent(headerLayout);
-
+        outerLayout.addComponent(header);
     }
 
     class InterfaceGeneralizer<T extends GenericObject> {
