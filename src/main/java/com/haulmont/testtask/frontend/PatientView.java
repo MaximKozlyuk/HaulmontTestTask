@@ -80,7 +80,7 @@ class PatientView extends VerticalLayout implements ObjectView {
 
     private void updatePatientsList(Object o) {
         patients = patientDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patientDao.findAll()));
+        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patients));
     }
 
 }

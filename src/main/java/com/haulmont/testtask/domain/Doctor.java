@@ -2,6 +2,7 @@ package com.haulmont.testtask.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
@@ -12,6 +13,10 @@ import java.io.Serializable;
 public class Doctor extends Human implements Serializable {
 
     private String specialization;
+
+    @Getter
+    private static final int DEFAULT_RECIPE_AMOUNT = -1;
+    private int recipeAmount = DEFAULT_RECIPE_AMOUNT;
 
     public Doctor(String name, String surname) {
         super(name, surname);

@@ -3,6 +3,7 @@ package com.haulmont.testtask;
 import com.haulmont.testtask.dao.DataBaseManager;
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.dao.PatientDao;
+import com.haulmont.testtask.dao.RecipeDao;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
 import org.junit.Test;
@@ -59,6 +60,15 @@ public class Tests {
         System.out.println("FIND ALL:");
         doctors = dao.findAll();
         doctors.forEach(System.out::println);
+
+    }
+
+    @Test
+    public void recipeDaoTest () {
+        DoctorDao dao = DoctorDao.get();
+
+        List<Doctor> docs = dao.findAllWithStats();
+        docs.forEach(System.out::println);
 
     }
 

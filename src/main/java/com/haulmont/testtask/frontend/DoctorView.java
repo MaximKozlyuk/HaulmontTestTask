@@ -2,7 +2,6 @@ package com.haulmont.testtask.frontend;
 
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.domain.Doctor;
-import com.haulmont.testtask.domain.Patient;
 import com.haulmont.testtask.frontend.editforms.DoctorForm;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
@@ -12,7 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DoctorView extends VerticalLayout implements ObjectView {
+class DoctorView extends VerticalLayout implements ObjectView {
 
     private Grid grid = new Grid();
 
@@ -23,8 +22,8 @@ public class DoctorView extends VerticalLayout implements ObjectView {
 
     private List<Doctor> doctors;
 
-    public DoctorView () {
-        grid.setColumns("id", "name", "surname", "middleName", "specialization");
+    DoctorView () {
+        grid.setColumns("id", "name", "surname", "middleName", "specialization", "recipeAmount");
         updateDoctorList(null);
 
         // search functionality and create button
@@ -80,8 +79,9 @@ public class DoctorView extends VerticalLayout implements ObjectView {
     }
 
     private void updateDoctorList (Object o) {
-        doctors = doctorDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Doctor.class, doctorDao.findAll()));
+        doctors = doctorDao.findAllWithStats();
+        BeanItemContainer beanItemContainer = new BeanItemContainer<>(Doctor.class, doctors);
+        grid.setContainerDataSource(beanItemContainer);
     }
 
 }

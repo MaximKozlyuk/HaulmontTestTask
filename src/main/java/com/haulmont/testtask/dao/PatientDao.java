@@ -25,14 +25,14 @@ public class PatientDao {
     }
 
     private Patient mapRow (ResultSet rs) throws SQLException {
-        Patient p = new Patient(
+        Patient patient = new Patient(
                 rs.getString("name"),
                 rs.getString("surname")
         );
-        p.setId(rs.getLong("id"));
-        p.setMiddleName(rs.getString("middle_name"));
-        p.setPhoneNum(rs.getString("phone_num"));
-        return p;
+        patient.setId(rs.getLong("id"));
+        patient.setMiddleName(rs.getString("middle_name"));
+        patient.setPhoneNum(rs.getString("phone_num"));
+        return patient;
     }
 
     public List<Patient> findAll () {

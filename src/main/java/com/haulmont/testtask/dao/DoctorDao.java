@@ -35,6 +35,12 @@ public class DoctorDao {
         return doc;
     }
 
+    private Doctor mapRowStats (ResultSet rs) throws SQLException {
+        Doctor doc = mapRow(rs);
+        doc.setRecipeAmount(rs.getInt("RECIPE_COUNT"));
+        return doc;
+    }
+
     public List<Doctor> findAll () {
         List<Doctor> doctors = new ArrayList<>();
         try {
@@ -44,6 +50,23 @@ public class DoctorDao {
 
             while (rs.next())
                 doctors.add(mapRow(rs));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }
+
+    public List<Doctor> findAllWithStats () {
+        List<Doctor> doctors = new ArrayList<>();
+        try {
+            PreparedStatement statement = con.prepareStatement("SELECT DOCTOR.*, COUNT(DOCTOR_ID) AS RECIPE_COUNT " +
+                    "FROM DOCTOR JOIN RECIPE ON DOCTOR.ID = RECIPE.DOCTOR_ID GROUP BY DOCTOR.ID;");
+            statement.execute();
+            ResultSet rs = statement.getResultSet();
+
+            while (rs.next())
+                doctors.add(mapRowStats(rs));
 
         } catch (SQLException e) {
             e.printStackTrace();
