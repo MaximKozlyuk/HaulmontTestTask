@@ -37,6 +37,7 @@ public class DataBaseManager {
         }
     }
 
+    //System.getProperty("file.separator");
     private void executeCreationScript() {
         InputStream in;
         try {

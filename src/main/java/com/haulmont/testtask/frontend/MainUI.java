@@ -10,7 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
  * + Отображение списка пациентов
  * + Добавление нового пациента, редактирование и удаление существующего
  * + Отображение списка врачей
- * Отображение статистической информации по количеству рецептов, выписанных врачами
+ * + Отображение статистической информации по количеству рецептов, выписанных врачами
  * + Добавление нового врача, редактирование и удаление существующего
  * Отображения списка рецептов
  * Фильтрация списка рецептов по описанию, приоритету и пациенту
@@ -32,8 +32,9 @@ public class MainUI extends  UI {
 
     private PatientView patientView = new PatientView();
     private DoctorView doctorView;
+    private RecipeView recipeView;
 
-    private ObjectView currentView = patientView;
+    private Layout currentView = patientView;
 
     @Override
     protected void init(VaadinRequest request) {
@@ -55,7 +56,13 @@ public class MainUI extends  UI {
             currentView.setVisible(true);
         });
         header.getRecipes().addClickListener(event -> {
-
+            currentView.setVisible(false);
+            if (recipeView == null ) {
+                recipeView = new RecipeView();
+                layout.addComponent(recipeView);
+            }
+            currentView = recipeView;
+            currentView.setVisible(true);
         });
         header.getDocs().addClickListener(event -> {
             currentView.setVisible(false);
@@ -70,17 +77,3 @@ public class MainUI extends  UI {
     }
 
 }
-
-
-//    class InterfaceGeneralizer<T extends GenericObject> {
-//
-//        private Class pojoType;
-//
-//        public InterfaceGeneralizer(T pojo) {
-//            pojoType = pojo.getClass();
-//             //pojoType.getDeclaredFields()[0].getName()
-//            grid.setColumns();
-//
-//        }
-//
-//    }

@@ -11,7 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class PatientView extends VerticalLayout implements ObjectView {
+class PatientView extends VerticalLayout {
 
     private Grid grid = new Grid();
 
@@ -26,7 +26,6 @@ class PatientView extends VerticalLayout implements ObjectView {
         grid.setColumns("id", "name", "surname", "middleName", "phoneNum");
         updatePatientsList(null);
 
-        // search functionality and create button
         search.setInputPrompt("Search");
 
         search.addTextChangeListener(event -> grid.setContainerDataSource(

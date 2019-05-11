@@ -1,12 +1,12 @@
 package com.haulmont.testtask.dao;
 
-import com.haulmont.testtask.domain.Patient;
+import com.haulmont.testtask.domain.Priority;
 import com.haulmont.testtask.domain.Recipe;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class RecipeDao {
 
@@ -18,108 +18,129 @@ public class RecipeDao {
 
     private Connection con;
 
+    private DoctorDao doctorDao = DoctorDao.get();
+    private PatientDao patientDao = PatientDao.get();
+
     private RecipeDao() {
         con = DataBaseManager.get().getConnection();
     }
 
     private Recipe mapRow (ResultSet rs) throws SQLException {
-        Recipe recipe = new Recipe(rs.getLong("id"));
-//        recipe.setDescription();
-//
-//        recipe.setPatient();
-//        recipe.setDoctor();
-//
-//        recipe.setCreation();
-//        recipe.setExpired();
-//        recipe.setPriority();
+        Recipe recipe = new Recipe(rs.getLong("recipe_id"));
+        recipe.setDescription(rs.getString("description"));
 
+        recipe.setPatient(patientDao.mapRow(rs));
+        recipe.setDoctor(doctorDao.mapRow(rs));
+
+        recipe.setCreation(rs.getDate("creation_date"));
+        recipe.setExpired(rs.getDate("expired"));
+        recipe.setPriority(Priority.valueOf(rs.getString("priority")));
         return recipe;
     }
 
+    public List<Recipe> findAll () {
+        List<Recipe> recipes = new ArrayList<>();
+        try {
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM RECIPE " +
+                            "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
+                            "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID");
+            statement.execute();
+            ResultSet rs = statement.getResultSet();
 
+            while (rs.next())
+                recipes.add(mapRow(rs));
 
-//    public List<Patient> findAll () {
-//        List<Patient> patients = new ArrayList<>();
-//        try {
-//            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.PATIENT");
-//            statement.execute();
-//            ResultSet rs = statement.getResultSet();
-//
-//            while (rs.next())
-//                patients.add(mapRow(rs));
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return patients;
-//    }
-//
-//    public Optional<Patient> findById (long id) {
-//        try {
-//            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.PATIENT WHERE id=?");
-//            statement.setLong(1,id);
-//            statement.execute();
-//            ResultSet rs = statement.getResultSet();
-//            rs.next();
-//            return Optional.of(mapRow(rs));
-//        } catch (SQLException e) {
-//            return Optional.empty();
-//        }
-//    }
-//
-//    public void save (Patient patient) {
-//        System.out.println("Patient dao save: " + patient);
-//        try {
-//            PreparedStatement statement;
-//            if (existsById(patient.getId())) {
-//                System.out.println("EXISTING");
-//                statement = con.prepareStatement(
-//                        "UPDATE PUBLIC.PATIENT SET name=?, surname=?, middle_name=?, phone_num=? WHERE id=?");
-//                statement.setLong(5,patient.getId());
-//            } else {
-//                System.out.println("NOT EXISTING");
-//                statement = con.prepareStatement(
-//                        "INSERT INTO PUBLIC.PATIENT (name, surname, middle_name, phone_num) VALUES(?,?,?,?)");
-//            }
-//            setupStatement(statement,patient);
-//            statement.execute();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void delete (Patient patient) {
-//        try {
-//            PreparedStatement statement = con.prepareStatement(
-//                    "DELETE FROM PUBLIC.PATIENT WHERE name=? AND surname=? AND middle_name=? AND phone_num=?");
-//            setupStatement(statement,patient);
-//            statement.execute();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("Patient dao delete: " + patient);
-//    }
-//
-//    private void setupStatement (PreparedStatement ps, Patient patient) throws SQLException {
-//        ps.setString(1,patient.getName());
-//        ps.setString(2,patient.getSurname());
-//        ps.setString(3,patient.getMiddleName());
-//        ps.setString(4,patient.getPhoneNum());
-//    }
-//
-//    public boolean existsById (long id) {
-//        System.out.println("existsById " + id);
-//        try {
-//            PreparedStatement statement = con.prepareStatement("SELECT count(id) FROM PUBLIC.PATIENT WHERE id=?");
-//            statement.setLong(1,id);
-//            statement.execute();
-//            ResultSet rs = statement.getResultSet();
-//            rs.next();
-//            return rs.getInt(1) == 1;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return recipes;
+    }
+
+    public Optional<Recipe> findById (long id) {
+        try {
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM RECIPE " +
+                    "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
+                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID WHERE RECIPE.DOCTOR_ID_REF = ?");
+            statement.setLong(1,id);
+            statement.execute();
+            ResultSet rs = statement.getResultSet();
+            rs.next();
+            return Optional.of(mapRow(rs));
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void save (Recipe recipe) {
+        System.out.println("----------------------------");
+        System.out.println("recipe dao save()");
+
+        System.out.println(recipe.getPatient());
+        System.out.println(recipe.getDoctor());
+
+        System.out.println(recipe.getDoctor().getId());
+        System.out.println(recipe.getPatient().getId());
+        System.out.println(recipe.getId());
+
+        doctorDao.findAll().forEach(System.out::println);
+        System.out.println("patients:");
+        patientDao.findAll().forEach(System.out::println);
+
+        System.out.println("----------------------------");
+        try {
+            PreparedStatement statement;
+            if (existsById(recipe.getId())) {
+                System.out.println("exists");
+                statement = con.prepareStatement(
+                        "UPDATE PUBLIC.RECIPE SET DESCRIPTION=?, PATIENT_ID_REF=?, DOCTOR_ID_REF=?, CREATION_DATE=?, " +
+                                "EXPIRED=?, PRIORITY=? WHERE RECIPE_ID=?");
+                statement.setLong(7,recipe.getId());
+            } else {
+                System.out.println("!exists");
+                statement = con.prepareStatement(
+                        "INSERT INTO PUBLIC.RECIPE (DESCRIPTION, PATIENT_ID_REF, DOCTOR_ID_REF, CREATION_DATE, " +
+                                "EXPIRED, PRIORITY) VALUES(?,?,?,?,?,?)");
+            }
+            setupStatement(statement,recipe);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete (Recipe recipe) {
+        try {
+            PreparedStatement statement = con.prepareStatement(
+                    "DELETE FROM PUBLIC.RECIPE WHERE DESCRIPTION=? AND PATIENT_ID_REF=? AND DOCTOR_ID_REF=? AND" +
+                            " CREATION_DATE=? AND EXPIRED=? AND PRIORITY=?");
+            setupStatement(statement,recipe);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setupStatement (PreparedStatement ps, Recipe recipe) throws SQLException {
+        ps.setString(1,recipe.getDescription());
+        ps.setLong(2,recipe.getPatient().getId());
+        ps.setLong(3,recipe.getDoctor().getId());
+        ps.setDate(4, new Date(recipe.getCreation().getTime()));
+        ps.setDate(5, new Date(recipe.getExpired().getTime()));
+        ps.setString(6,recipe.getPriority().toString());
+    }
+
+    public boolean existsById (long id) {
+        try {
+            PreparedStatement statement = con.prepareStatement("SELECT count(RECIPE_ID) FROM PUBLIC.RECIPE WHERE RECIPE_ID=?");
+            statement.setLong(1,id);
+            statement.execute();
+            ResultSet rs = statement.getResultSet();
+            rs.next();
+            return rs.getInt(1) == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

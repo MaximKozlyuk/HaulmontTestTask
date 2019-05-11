@@ -11,7 +11,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class DoctorView extends VerticalLayout implements ObjectView {
+class DoctorView extends VerticalLayout {
 
     private Grid grid = new Grid();
 

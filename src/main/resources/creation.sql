@@ -1,13 +1,13 @@
 create table patient (
-    id bigint primary key identity,
-    name varchar(128),
-    surname varchar(128),
+    patient_id bigint primary key identity,
+    name varchar(128) not null,
+    surname varchar(128) not null,
     middle_name varchar(128),
     phone_num varchar(18)
 );
 
 create table doctor (
-    id bigint primary key identity,
+    doctor_id bigint primary key identity,
     name varchar(128),
     surname varchar(128),
     middle_name varchar(128),
@@ -15,13 +15,13 @@ create table doctor (
 );
 
 create table recipe (
-    id bigint primary key identity,
+    recipe_id bigint primary key identity,
     description varchar(256),
-    patient_id bigint not null references patient(id) on delete cascade,
-    doctor_id bigint not null references doctor(id) on delete cascade,
+    patient_id_ref bigint not null references patient(patient_id) on delete cascade,
+    doctor_id_ref bigint not null references doctor(doctor_id) on delete cascade,
     creation_date date not null,
-    expired int,
-    priority varchar(8)
+    expired date not null,
+    priority varchar(8) not null
 );
 
 INSERT INTO "PUBLIC"."DOCTOR" ("NAME", "SURNAME", "MIDDLE_NAME", "SPECIALIZATION") VALUES ('Name1', 'Surname1', 'MiddleName1', 'gastroenterologist');
@@ -41,13 +41,13 @@ INSERT INTO "PUBLIC"."PATIENT" ("NAME", "SURNAME", "MIDDLE_NAME", "PHONE_NUM") V
 INSERT INTO "PUBLIC"."PATIENT" ("NAME", "SURNAME", "MIDDLE_NAME", "PHONE_NUM") VALUES ('Name11', 'Surname11', 'MiddleName11', '+4402032145110');
 
 
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 0, 0, '2019-05-01', 30, '');
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('diarrhea killer', 1, 0, '2019-05-01', 60, null);
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('vitamins', 1, 0, '2019-05-02', 120, null);
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('gastritis', 2, 0, '2019-05-03', 15, null);
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('antihistamine', 2, 0, '2019-05-04', 500000, null);
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 3, 1, '2019-05-01', 30, '');
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 4, 1, '2019-05-01', 30, '');
-INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID", "DOCTOR_ID", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 5, 2, '2019-05-01', 30, '');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 0, 0, '2019-05-01', '2020-05-01', 'NORMALEM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('diarrhea killer', 1, 0, '2019-05-01', '2020-05-01', 'NORMALEM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('vitamins', 1, 0, '2019-05-02', '2020-05-01', 'CITO');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('gastritis', 2, 0, '2019-05-03', '2020-05-01', 'STATIM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('antihistamine', 2, 0, '2019-05-04', '2120-05-01', 'NORMALEM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 3, 1, '2019-05-01', '2020-05-01', 'NORMALEM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 4, 1, '2019-05-01', '2020-05-01', 'NORMALEM');
+INSERT INTO "PUBLIC"."RECIPE" ("DESCRIPTION", "PATIENT_ID_REF", "DOCTOR_ID_REF", "CREATION_DATE", "EXPIRED", "PRIORITY") VALUES ('just pills', 5, 2, '2019-05-01', '2020-05-01', 'NORMALEM');
 
 commit;

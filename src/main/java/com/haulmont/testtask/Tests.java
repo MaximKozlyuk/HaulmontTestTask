@@ -6,6 +6,8 @@ import com.haulmont.testtask.dao.PatientDao;
 import com.haulmont.testtask.dao.RecipeDao;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
+import com.haulmont.testtask.domain.Priority;
+import com.haulmont.testtask.domain.Recipe;
 import org.junit.Test;
 
 import java.util.List;
@@ -61,15 +63,54 @@ public class Tests {
         doctors = dao.findAll();
         doctors.forEach(System.out::println);
 
-    }
-
-    @Test
-    public void recipeDaoTest () {
-        DoctorDao dao = DoctorDao.get();
-
+        System.out.println("stats:");
         List<Doctor> docs = dao.findAllWithStats();
         docs.forEach(System.out::println);
 
     }
+
+    @Test
+    public void recipeDaoTest () {
+        RecipeDao dao = RecipeDao.get();
+        PatientDao patientDao = PatientDao.get();
+        DoctorDao doctorDao = DoctorDao.get();
+
+        System.out.println(dao.findById(2).get());
+
+        List<Recipe> recipes = dao.findAll();
+        recipes.forEach(System.out::println);
+
+        System.out.println("SAVE TEST:");
+        Doctor doc = doctorDao.findById(0).get();
+        Patient patient = patientDao.findById(0).get();
+
+        Recipe recipe = new Recipe();
+        recipe.setPriority(Priority.STATIM);
+//        recipe.setExpired(1234);
+//        recipe.setCreation(Date.from());
+        recipe.setDoctor(doc);
+        recipe.setPatient(patient);
+        recipe.setDescription("test");
+        dao.save(recipe);
+
+        recipes = dao.findAll();
+        recipes.forEach(System.out::println);
+
+        System.out.println("DELETE");
+        dao.delete(recipe);
+
+        recipes = dao.findAll();
+        recipes.forEach(System.out::println);
+
+    }
+
+    @Test
+    public void recipeDaoTest2 () {
+        RecipeDao dao = RecipeDao.get();
+        List<Recipe> recipes = dao.findAll();
+        recipes.forEach(System.out::println);
+
+    }
+
 
 }

@@ -24,12 +24,12 @@ public class PatientDao {
         con = DataBaseManager.get().getConnection();
     }
 
-    private Patient mapRow (ResultSet rs) throws SQLException {
+    Patient mapRow (ResultSet rs) throws SQLException {
         Patient patient = new Patient(
                 rs.getString("name"),
                 rs.getString("surname")
         );
-        patient.setId(rs.getLong("id"));
+        patient.setId(rs.getLong("patient_id"));
         patient.setMiddleName(rs.getString("middle_name"));
         patient.setPhoneNum(rs.getString("phone_num"));
         return patient;
@@ -53,7 +53,7 @@ public class PatientDao {
 
     public Optional<Patient> findById (long id) {
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.PATIENT WHERE id=?");
+            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.PATIENT WHERE PATIENT_ID=?");
             statement.setLong(1,id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
@@ -65,18 +65,15 @@ public class PatientDao {
     }
 
     public void save (Patient patient) {
-        System.out.println("Patient dao save: " + patient);
         try {
             PreparedStatement statement;
             if (existsById(patient.getId())) {
-                System.out.println("EXISTING");
                 statement = con.prepareStatement(
-                    "UPDATE PUBLIC.PATIENT SET name=?, surname=?, middle_name=?, phone_num=? WHERE id=?");
+                    "UPDATE PUBLIC.PATIENT SET NAME=?, SURNAME=?, MIDDLE_NAME=?, PHONE_NUM=? WHERE PATIENT_ID=?");
                 statement.setLong(5,patient.getId());
             } else {
-                System.out.println("NOT EXISTING");
                 statement = con.prepareStatement(
-                        "INSERT INTO PUBLIC.PATIENT (name, surname, middle_name, phone_num) VALUES(?,?,?,?)");
+                        "INSERT INTO PUBLIC.PATIENT (NAME, SURNAME, MIDDLE_NAME, PHONE_NUM) VALUES(?,?,?,?)");
             }
             setupStatement(statement,patient);
             statement.execute();
@@ -88,13 +85,12 @@ public class PatientDao {
     public void delete (Patient patient) {
         try {
             PreparedStatement statement = con.prepareStatement(
-                    "DELETE FROM PUBLIC.PATIENT WHERE name=? AND surname=? AND middle_name=? AND phone_num=?");
+                    "DELETE FROM PUBLIC.PATIENT WHERE NAME=? AND SURNAME=? AND MIDDLE_NAME=? AND PHONE_NUM=?");
             setupStatement(statement,patient);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Patient dao delete: " + patient);
     }
 
     private void setupStatement (PreparedStatement ps, Patient patient) throws SQLException {
@@ -105,9 +101,8 @@ public class PatientDao {
     }
 
     public boolean existsById (long id) {
-        System.out.println("existsById " + id);
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT count(id) FROM PUBLIC.PATIENT WHERE id=?");
+            PreparedStatement statement = con.prepareStatement("SELECT count(PATIENT_ID) FROM PUBLIC.PATIENT WHERE PATIENT_ID=?");
             statement.setLong(1,id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
