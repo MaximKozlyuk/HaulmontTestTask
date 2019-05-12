@@ -1,16 +1,16 @@
 create table patient (
     patient_id bigint primary key identity,
-    name varchar(128) not null,
-    surname varchar(128) not null,
-    middle_name varchar(128),
+    name varchar(64) not null,
+    surname varchar(64) not null,
+    middle_name varchar(64),
     phone_num varchar(18)
 );
 
 create table doctor (
     doctor_id bigint primary key identity,
-    name varchar(128),
-    surname varchar(128),
-    middle_name varchar(128),
+    name varchar(64),
+    surname varchar(64),
+    middle_name varchar(64),
     specialization varchar(256)
 );
 

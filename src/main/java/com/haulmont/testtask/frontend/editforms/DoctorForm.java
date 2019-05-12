@@ -3,12 +3,14 @@ package com.haulmont.testtask.frontend.editforms;
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.GenericObject;
+import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 
 import java.util.function.Consumer;
 
-public class DoctorForm extends HumanForm implements EditForm {
+public class DoctorForm extends HumanForm {
 
     private TextField specialization = new TextField("Specialization");
 
@@ -24,21 +26,27 @@ public class DoctorForm extends HumanForm implements EditForm {
         getSave().addClickListener(e -> save());
         getDelete().addClickListener(e -> delete());
 
-        addComponents(getName(),getSurname(),getMiddleName(),specialization, getButtons());
+        specialization.setMaxLength(256);
 
+        addComponents(getName(),getSurname(),getMiddleName(),specialization, getButtons());
     }
 
-    @Override
     public void setPojo (GenericObject pojo) {
         this.pojo = (Doctor) pojo;
         BeanFieldGroup.bindFieldsUnbuffered(pojo,this);
 
-        getDelete().setVisible(dao.existsById(this.pojo.getId()));
+        getDelete().setVisible(dao.existsById(pojo.getId()));
         setVisible(true);
         getName().selectAll();
     }
 
     private void save () {
+        try {
+            super.validate();
+        } catch (Validator.InvalidValueException exp) {
+            Notification.show(exp.getMessage());
+            return;
+        }
         dao.save(pojo);
         updateList.accept(null);
         setVisible(false);

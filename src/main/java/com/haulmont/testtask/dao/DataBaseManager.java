@@ -15,6 +15,8 @@ public class DataBaseManager {
         return ourInstance;
     }
 
+    private final String pathToCreationScript = "/Users/max/Desktop/test-task-master/src/main/resources/creation.sql";
+
     private JDBCDataSource ds;
     private Connection conn;
 
@@ -41,7 +43,7 @@ public class DataBaseManager {
     private void executeCreationScript() {
         InputStream in;
         try {
-            in = new FileInputStream("/Users/max/Desktop/test-task-master/src/main/resources/creation.sql");
+            in = new FileInputStream(pathToCreationScript);
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
             String str = reader.readLine();

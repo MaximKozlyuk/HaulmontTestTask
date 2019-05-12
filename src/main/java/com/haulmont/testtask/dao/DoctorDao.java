@@ -1,6 +1,7 @@
 package com.haulmont.testtask.dao;
 
 import com.haulmont.testtask.domain.Doctor;
+import com.haulmont.testtask.domain.GenericObject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -60,8 +61,8 @@ public class DoctorDao {
     public List<Doctor> findAllWithStats () {
         List<Doctor> doctors = new ArrayList<>();
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT DOCTOR.*, COUNT(DOCTOR_ID) AS RECIPE_COUNT " +
-                    "FROM DOCTOR JOIN RECIPE ON DOCTOR.DOCTOR_ID = RECIPE.DOCTOR_ID_REF GROUP BY DOCTOR.DOCTOR_ID;");
+            PreparedStatement statement = con.prepareStatement("SELECT DOCTOR.*, count(RECIPE_ID) AS recipe_count " +
+                    "FROM DOCTOR LEFT JOIN RECIPE ON DOCTOR.DOCTOR_ID = RECIPE.DOCTOR_ID_REF GROUP BY DOCTOR_ID;");
             statement.execute();
             ResultSet rs = statement.getResultSet();
 
@@ -90,16 +91,17 @@ public class DoctorDao {
     public void save (Doctor doctor) {
         try {
             PreparedStatement statement;
-            if (existsById(doctor.getId())) {
+            if (doctor.getId() == GenericObject.getDEFAULT_ID() || !existsById(doctor.getId())) {
+                statement = con.prepareStatement(
+                        "INSERT INTO PUBLIC.DOCTOR (NAME, SURNAME, MIDDLE_NAME, SPECIALIZATION) VALUES(?,?,?,?)");
+            } else {
                 statement = con.prepareStatement(
                         "UPDATE PUBLIC.DOCTOR SET NAME=?, SURNAME=?, MIDDLE_NAME=?, SPECIALIZATION=? WHERE DOCTOR_ID=?");
                 statement.setLong(5,doctor.getId());
-            } else {
-                statement = con.prepareStatement(
-                        "INSERT INTO PUBLIC.DOCTOR (NAME, SURNAME, MIDDLE_NAME, SPECIALIZATION) VALUES(?,?,?,?)");
             }
             setupStatement(statement,doctor);
             statement.execute();
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

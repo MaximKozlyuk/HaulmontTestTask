@@ -72,31 +72,14 @@ public class RecipeDao {
     }
 
     public void save (Recipe recipe) {
-        System.out.println("----------------------------");
-        System.out.println("recipe dao save()");
-
-        System.out.println(recipe.getPatient());
-        System.out.println(recipe.getDoctor());
-
-        System.out.println(recipe.getDoctor().getId());
-        System.out.println(recipe.getPatient().getId());
-        System.out.println(recipe.getId());
-
-        doctorDao.findAll().forEach(System.out::println);
-        System.out.println("patients:");
-        patientDao.findAll().forEach(System.out::println);
-
-        System.out.println("----------------------------");
         try {
             PreparedStatement statement;
             if (existsById(recipe.getId())) {
-                System.out.println("exists");
                 statement = con.prepareStatement(
                         "UPDATE PUBLIC.RECIPE SET DESCRIPTION=?, PATIENT_ID_REF=?, DOCTOR_ID_REF=?, CREATION_DATE=?, " +
                                 "EXPIRED=?, PRIORITY=? WHERE RECIPE_ID=?");
                 statement.setLong(7,recipe.getId());
             } else {
-                System.out.println("!exists");
                 statement = con.prepareStatement(
                         "INSERT INTO PUBLIC.RECIPE (DESCRIPTION, PATIENT_ID_REF, DOCTOR_ID_REF, CREATION_DATE, " +
                                 "EXPIRED, PRIORITY) VALUES(?,?,?,?,?,?)");

@@ -3,16 +3,17 @@ package com.haulmont.testtask.frontend.editforms;
 import com.haulmont.testtask.dao.PatientDao;
 import com.haulmont.testtask.domain.GenericObject;
 import com.haulmont.testtask.domain.Patient;
+import com.vaadin.data.Validator;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.validator.RegexpValidator;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 
 import java.util.function.Consumer;
 
-public class PatientForm extends HumanForm implements EditForm {
+public class PatientForm extends HumanForm {
 
     private TextField phoneNum = new TextField("Phone number");
-    //private NativeSelect
-    //private PopupDateField
 
     private PatientDao dao = PatientDao.get();
     private Patient pojo;
@@ -26,11 +27,14 @@ public class PatientForm extends HumanForm implements EditForm {
         getSave().addClickListener(e -> save());
         getDelete().addClickListener(e -> delete());
 
+        RegexpValidator phoneValidator = new RegexpValidator(
+                "^\\+(?:[0-9]•?){6,14}[0-9]$", "wrong phone number format");
+        phoneNum.addValidator(phoneValidator);
+
         addComponents(getName(),getSurname(),getMiddleName(),phoneNum, getButtons());
 
     }
 
-    @Override
     public void setPojo(GenericObject pojo) {
         this.pojo = (Patient) pojo;
         BeanFieldGroup.bindFieldsUnbuffered(pojo,this);
@@ -41,6 +45,13 @@ public class PatientForm extends HumanForm implements EditForm {
     }
 
     private void save () {
+        try {
+            phoneNum.validate();
+            super.validate();
+        } catch (Validator.InvalidValueException exp) {
+            Notification.show(exp.getMessage());
+            return;
+        }
         dao.save(pojo);
         updateList.accept(null);
         setVisible(false);
