@@ -4,6 +4,9 @@ import com.vaadin.data.Validator;
 import com.vaadin.ui.TextField;
 import lombok.Getter;
 
+/**
+ * Basic patient or doctor fields with buttons and configured validation
+ */
 @Getter
 class HumanForm extends FormButtons {
 

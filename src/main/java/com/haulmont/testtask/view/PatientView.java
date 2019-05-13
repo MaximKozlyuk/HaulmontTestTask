@@ -1,7 +1,6 @@
 package com.haulmont.testtask.view;
 
 import com.haulmont.testtask.dao.PatientDao;
-import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
 import com.haulmont.testtask.view.editforms.PatientForm;
 import com.vaadin.data.util.BeanItemContainer;
@@ -17,6 +16,7 @@ class PatientView extends VerticalLayout {
     private Grid grid = new Grid();
 
     private TextField search = new TextField();
+
     private PatientForm patientForm = new PatientForm(this::updatePatientsList);
 
     private PatientDao patientDao = PatientDao.get();

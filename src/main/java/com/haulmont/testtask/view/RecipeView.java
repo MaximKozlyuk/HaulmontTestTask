@@ -22,11 +22,15 @@ class RecipeView extends VerticalLayout implements Layout {
     private Grid docSelectorGrid = new Grid();
     private DoctorDao doctorDao = DoctorDao.get();
 
-    private Grid petientSelectGrid = new Grid();
+    private Grid patientSelectGrid = new Grid();
     private PatientDao patientDao = PatientDao.get();
 
     private TextField search = new TextField();
 
+    /**
+     * Reference of {@link #updateRecipeList(Object)} gives form ability to
+     * update views grid
+     */
     private RecipeForm recipeForm = new RecipeForm(
             this::updateRecipeList, this::selectDoctor, this::selectPatient);
     private RecipeDao recipeDao = RecipeDao.get();
@@ -96,28 +100,32 @@ class RecipeView extends VerticalLayout implements Layout {
             docSelectorGrid.setVisible(false);
         });
 
-        petientSelectGrid.setSizeFull();
-        petientSelectGrid.setCaption("Choose patient:");
-        petientSelectGrid.setColumns(
+        patientSelectGrid.setSizeFull();
+        patientSelectGrid.setCaption("Choose patient:");
+        patientSelectGrid.setColumns(
                 "id", "name", "surname", "middleName", "phoneNum");
-        petientSelectGrid.setVisible(false);
-        petientSelectGrid.setContainerDataSource(
+        patientSelectGrid.setVisible(false);
+        patientSelectGrid.setContainerDataSource(
                 new BeanItemContainer<>(Patient.class, patientDao.findAll()));
-        petientSelectGrid.addSelectionListener(event -> {
+        patientSelectGrid.addSelectionListener(event -> {
             recipeForm.setPatient((Patient) event.getSelected()
                     .iterator().next());
-            petientSelectGrid.setVisible(false);
+            patientSelectGrid.setVisible(false);
         });
 
         setSizeFull();
         setSpacing(true);
-        addComponents(tools, body, docSelectorGrid, petientSelectGrid);
+        addComponents(tools, body, docSelectorGrid, patientSelectGrid);
     }
 
     private void updateRecipeList(Object o) {
         recipes = recipeDao.findAll();
         grid.setContainerDataSource(
                 new BeanItemContainer<>(Recipe.class, recipes));
+        // hiding selection grid if
+        // user saved or deleted something with opened grid
+        patientSelectGrid.setVisible(false);
+        docSelectorGrid.setVisible(false);
     }
 
     private void selectDoctor(Object o) {
@@ -125,7 +133,7 @@ class RecipeView extends VerticalLayout implements Layout {
     }
 
     private void selectPatient(Object o) {
-        petientSelectGrid.setVisible(true);
+        patientSelectGrid.setVisible(true);
     }
 
 }

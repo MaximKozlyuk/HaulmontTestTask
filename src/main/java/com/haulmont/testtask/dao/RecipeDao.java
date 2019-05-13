@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @see Dao
+ */
 public class RecipeDao implements Dao<Recipe> {
 
     private static RecipeDao ourInstance = new RecipeDao();

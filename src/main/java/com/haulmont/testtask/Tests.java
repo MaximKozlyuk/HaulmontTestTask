@@ -1,9 +1,6 @@
 package com.haulmont.testtask;
 
-import com.haulmont.testtask.dao.DataBaseManager;
-import com.haulmont.testtask.dao.DoctorDao;
-import com.haulmont.testtask.dao.PatientDao;
-import com.haulmont.testtask.dao.RecipeDao;
+import com.haulmont.testtask.dao.*;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
 import com.haulmont.testtask.domain.Priority;
@@ -11,6 +8,7 @@ import com.haulmont.testtask.domain.Recipe;
 import org.junit.Test;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 

@@ -32,6 +32,10 @@ public class MainUI extends UI {
 
     }
 
+    /**
+     * App header with name and buttons for switching between object views.
+     * by default {@link PatientView} is first to open
+     */
     private void addHeader(AbstractOrderedLayout outerLayout) {
         Header header = new Header();
         header.getPatients().addClickListener(event -> {

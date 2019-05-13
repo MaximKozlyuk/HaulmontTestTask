@@ -15,8 +15,8 @@ public class Doctor extends Human implements Serializable {
     private String specialization;
 
     @Getter
-    private static final int DEFAULT_RECIPE_AMOUNT = -1;
-    private int recipeAmount = DEFAULT_RECIPE_AMOUNT;
+    private static final int UNKNOWN_RECIPE_AMOUNT = -1;
+    private int recipeAmount = UNKNOWN_RECIPE_AMOUNT;
 
     public Doctor(String name, String surname) {
         super(name, surname);

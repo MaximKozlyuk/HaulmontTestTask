@@ -7,6 +7,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import lombok.Getter;
 
+/**
+ * Configured save and delete buttons for all forms
+ */
 @Getter
 class FormButtons extends FormLayout {
 

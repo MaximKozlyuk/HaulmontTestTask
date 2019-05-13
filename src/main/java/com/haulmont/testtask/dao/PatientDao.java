@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @see Dao
+ */
 public class PatientDao implements Dao<Patient> {
 
     private static PatientDao ourInstance = new PatientDao();
