@@ -17,8 +17,8 @@ create table doctor (
 create table recipe (
     recipe_id bigint primary key identity,
     description varchar(256),
-    patient_id_ref bigint not null references patient(patient_id) on delete cascade,
-    doctor_id_ref bigint not null references doctor(doctor_id) on delete cascade,
+    patient_id_ref bigint not null references patient(patient_id),
+    doctor_id_ref bigint not null references doctor(doctor_id),
     creation_date date not null,
     expired date not null,
     priority varchar(8) not null

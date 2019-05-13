@@ -8,13 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RecipeDao {
+public class RecipeDao implements Dao<Recipe> {
 
     private static RecipeDao ourInstance = new RecipeDao();
-
-    public static RecipeDao get() {
-        return ourInstance;
-    }
 
     private Connection con;
 
@@ -25,7 +21,11 @@ public class RecipeDao {
         con = DataBaseManager.get().getConnection();
     }
 
-    private Recipe mapRow (ResultSet rs) throws SQLException {
+    public static RecipeDao get() {
+        return ourInstance;
+    }
+
+    private Recipe mapRow(ResultSet rs) throws SQLException {
         Recipe recipe = new Recipe(rs.getLong("recipe_id"));
         recipe.setDescription(rs.getString("description"));
 
@@ -34,16 +34,19 @@ public class RecipeDao {
 
         recipe.setCreation(rs.getDate("creation_date"));
         recipe.setExpired(rs.getDate("expired"));
-        recipe.setPriority(Priority.valueOf(rs.getString("priority")));
+        recipe.setPriority(Priority.valueOf(
+                rs.getString("priority")));
         return recipe;
     }
 
-    public List<Recipe> findAll () {
+    @Override
+    public List<Recipe> findAll() {
         List<Recipe> recipes = new ArrayList<>();
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM RECIPE " +
-                            "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
-                            "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID");
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT * FROM RECIPE " +
+                    "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
+                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID");
             statement.execute();
             ResultSet rs = statement.getResultSet();
 
@@ -56,12 +59,15 @@ public class RecipeDao {
         return recipes;
     }
 
-    public Optional<Recipe> findById (long id) {
+    @Override
+    public Optional<Recipe> findById(long id) {
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM RECIPE " +
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT * FROM RECIPE " +
                     "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
-                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID WHERE RECIPE.DOCTOR_ID_REF = ?");
-            statement.setLong(1,id);
+                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID " +
+                    "WHERE RECIPE.DOCTOR_ID_REF = ?");
+            statement.setLong(1, id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
             rs.next();
@@ -71,51 +77,62 @@ public class RecipeDao {
         }
     }
 
-    public void save (Recipe recipe) {
+    @Override
+    public void save(Recipe recipe) {
         try {
             PreparedStatement statement;
             if (existsById(recipe.getId())) {
                 statement = con.prepareStatement(
-                        "UPDATE PUBLIC.RECIPE SET DESCRIPTION=?, PATIENT_ID_REF=?, DOCTOR_ID_REF=?, CREATION_DATE=?, " +
+                        "UPDATE PUBLIC.RECIPE SET DESCRIPTION=?, " +
+                                "PATIENT_ID_REF=?, DOCTOR_ID_REF=?, " +
+                                "CREATION_DATE=?, " +
                                 "EXPIRED=?, PRIORITY=? WHERE RECIPE_ID=?");
-                statement.setLong(7,recipe.getId());
+                statement.setLong(7, recipe.getId());
             } else {
                 statement = con.prepareStatement(
-                        "INSERT INTO PUBLIC.RECIPE (DESCRIPTION, PATIENT_ID_REF, DOCTOR_ID_REF, CREATION_DATE, " +
+                        "INSERT INTO PUBLIC.RECIPE (DESCRIPTION, " +
+                                "PATIENT_ID_REF, DOCTOR_ID_REF, " +
+                                "CREATION_DATE, " +
                                 "EXPIRED, PRIORITY) VALUES(?,?,?,?,?,?)");
             }
-            setupStatement(statement,recipe);
+            setupStatement(statement, recipe);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void delete (Recipe recipe) {
+    @Override
+    public void delete(Recipe recipe) {
         try {
             PreparedStatement statement = con.prepareStatement(
-                    "DELETE FROM PUBLIC.RECIPE WHERE DESCRIPTION=? AND PATIENT_ID_REF=? AND DOCTOR_ID_REF=? AND" +
+                    "DELETE FROM PUBLIC.RECIPE WHERE DESCRIPTION=? " +
+                            "AND PATIENT_ID_REF=? AND DOCTOR_ID_REF=? AND" +
                             " CREATION_DATE=? AND EXPIRED=? AND PRIORITY=?");
-            setupStatement(statement,recipe);
+            setupStatement(statement, recipe);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void setupStatement (PreparedStatement ps, Recipe recipe) throws SQLException {
-        ps.setString(1,recipe.getDescription());
-        ps.setLong(2,recipe.getPatient().getId());
-        ps.setLong(3,recipe.getDoctor().getId());
+    private void setupStatement(PreparedStatement ps, Recipe recipe)
+            throws SQLException {
+        ps.setString(1, recipe.getDescription());
+        ps.setLong(2, recipe.getPatient().getId());
+        ps.setLong(3, recipe.getDoctor().getId());
         ps.setDate(4, new Date(recipe.getCreation().getTime()));
         ps.setDate(5, new Date(recipe.getExpired().getTime()));
-        ps.setString(6,recipe.getPriority().toString());
+        ps.setString(6, recipe.getPriority().toString());
     }
 
-    public boolean existsById (long id) {
+    @Override
+    public boolean existsById(long id) {
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT count(RECIPE_ID) FROM PUBLIC.RECIPE WHERE RECIPE_ID=?");
-            statement.setLong(1,id);
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT count(RECIPE_ID) FROM PUBLIC.RECIPE " +
+                            "WHERE RECIPE_ID=?");
+            statement.setLong(1, id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
             rs.next();

@@ -17,7 +17,7 @@ public abstract class GenericObject implements Serializable {
         this.id = id;
     }
 
-    public GenericObject () {
+    public GenericObject() {
         this.id = DEFAULT_ID;
     }
 

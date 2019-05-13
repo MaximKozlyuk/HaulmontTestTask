@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend;
+package com.haulmont.testtask.view;
 
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.dao.PatientDao;
@@ -6,7 +6,7 @@ import com.haulmont.testtask.dao.RecipeDao;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
 import com.haulmont.testtask.domain.Recipe;
-import com.haulmont.testtask.frontend.editforms.RecipeForm;
+import com.haulmont.testtask.view.editforms.RecipeForm;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
@@ -27,22 +27,25 @@ class RecipeView extends VerticalLayout implements Layout {
 
     private TextField search = new TextField();
 
-    private RecipeForm recipeForm = new RecipeForm(this::updateRecipeList, this::selectDoctor, this::selectPatient);
+    private RecipeForm recipeForm = new RecipeForm(
+            this::updateRecipeList, this::selectDoctor, this::selectPatient);
     private RecipeDao recipeDao = RecipeDao.get();
     private List<Recipe> recipes;
 
-    RecipeView () {
+    RecipeView() {
         grid.setColumns("id", "description", "creation", "expired", "priority");
         updateRecipeList(null);
 
         search.setInputPrompt("Search");
 
-        search.addTextChangeListener(event -> grid.setContainerDataSource(
-                new BeanItemContainer<>(Recipe.class,
-                        recipes.stream()
-                                .filter(patient -> patient.toString().contains(event.getText()))
-                                .collect(Collectors.toList()))
-        ));
+        search.addTextChangeListener(event -> {
+            BeanItemContainer container = new BeanItemContainer<>(Recipe.class,
+                    recipes.stream()
+                            .filter(recipe -> recipe.toString().
+                                    contains(event.getText()))
+                            .collect(Collectors.toList()));
+            grid.setContainerDataSource(container);
+        });
 
         Button clearFilter = new Button(FontAwesome.TIMES);
         clearFilter.addClickListener(click -> {
@@ -61,7 +64,7 @@ class RecipeView extends VerticalLayout implements Layout {
         search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
         search.addComponents(this.search, clearFilter);
 
-        HorizontalLayout tools = new HorizontalLayout(search,addBtn);
+        HorizontalLayout tools = new HorizontalLayout(search, addBtn);
         tools.setSpacing(true);
 
         HorizontalLayout body = new HorizontalLayout(grid, recipeForm);
@@ -69,13 +72,12 @@ class RecipeView extends VerticalLayout implements Layout {
         body.setSpacing(true);
         body.setSizeFull();
         grid.setSizeFull();
-        body.setExpandRatio(grid,1);
+        body.setExpandRatio(grid, 1);
 
         grid.addSelectionListener(event -> {
             if (event.getSelected().isEmpty()) {
                 recipeForm.setVisible(false);
             } else {
-                System.out.println("SELECTION");
                 Recipe recipe = (Recipe) event.getSelected().iterator().next();
                 recipeForm.setPojo(recipe);
             }
@@ -83,21 +85,27 @@ class RecipeView extends VerticalLayout implements Layout {
 
         docSelectorGrid.setSizeFull();
         docSelectorGrid.setCaption("Choose doctor:");
-        docSelectorGrid.setColumns("id", "name", "surname", "middleName", "specialization");
+        docSelectorGrid.setColumns(
+                "id", "name", "surname", "middleName", "specialization");
         docSelectorGrid.setVisible(false);
-        docSelectorGrid.setContainerDataSource(new BeanItemContainer<>(Doctor.class, doctorDao.findAll()));
+        docSelectorGrid.setContainerDataSource(
+                new BeanItemContainer<>(Doctor.class, doctorDao.findAll()));
         docSelectorGrid.addSelectionListener(event -> {
-            recipeForm.setDoctor((Doctor) event.getSelected().iterator().next());
+            recipeForm.setDoctor((Doctor) event.getSelected()
+                    .iterator().next());
             docSelectorGrid.setVisible(false);
         });
 
         petientSelectGrid.setSizeFull();
         petientSelectGrid.setCaption("Choose patient:");
-        petientSelectGrid.setColumns("id", "name", "surname", "middleName", "phoneNum");
+        petientSelectGrid.setColumns(
+                "id", "name", "surname", "middleName", "phoneNum");
         petientSelectGrid.setVisible(false);
-        petientSelectGrid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patientDao.findAll()));
+        petientSelectGrid.setContainerDataSource(
+                new BeanItemContainer<>(Patient.class, patientDao.findAll()));
         petientSelectGrid.addSelectionListener(event -> {
-            recipeForm.setPatient((Patient) event.getSelected().iterator().next());
+            recipeForm.setPatient((Patient) event.getSelected()
+                    .iterator().next());
             petientSelectGrid.setVisible(false);
         });
 
@@ -108,14 +116,15 @@ class RecipeView extends VerticalLayout implements Layout {
 
     private void updateRecipeList(Object o) {
         recipes = recipeDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Recipe.class, recipes));
+        grid.setContainerDataSource(
+                new BeanItemContainer<>(Recipe.class, recipes));
     }
 
-    private void selectDoctor (Object o) {
+    private void selectDoctor(Object o) {
         docSelectorGrid.setVisible(true);
     }
 
-    private void selectPatient (Object o) {
+    private void selectPatient(Object o) {
         petientSelectGrid.setVisible(true);
     }
 

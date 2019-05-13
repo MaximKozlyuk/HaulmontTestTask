@@ -3,21 +3,14 @@ package com.haulmont.testtask.dao;
 import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.GenericObject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DoctorDao {
+public class DoctorDao implements Dao<Doctor> {
 
     private static DoctorDao ourInstance = new DoctorDao();
-
-    public static DoctorDao get() {
-        return ourInstance;
-    }
 
     private Connection con;
 
@@ -25,7 +18,11 @@ public class DoctorDao {
         con = DataBaseManager.get().getConnection();
     }
 
-    Doctor mapRow (ResultSet rs) throws SQLException {
+    public static DoctorDao get() {
+        return ourInstance;
+    }
+
+    Doctor mapRow(ResultSet rs) throws SQLException {
         Doctor doc = new Doctor(
                 rs.getString("name"),
                 rs.getString("surname")
@@ -36,16 +33,18 @@ public class DoctorDao {
         return doc;
     }
 
-    private Doctor mapRowStats (ResultSet rs) throws SQLException {
+    private Doctor mapRowStats(ResultSet rs) throws SQLException {
         Doctor doc = mapRow(rs);
         doc.setRecipeAmount(rs.getInt("RECIPE_COUNT"));
         return doc;
     }
 
-    public List<Doctor> findAll () {
+    @Override
+    public List<Doctor> findAll() {
         List<Doctor> doctors = new ArrayList<>();
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.DOCTOR");
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT * FROM PUBLIC.DOCTOR");
             statement.execute();
             ResultSet rs = statement.getResultSet();
 
@@ -58,11 +57,13 @@ public class DoctorDao {
         return doctors;
     }
 
-    public List<Doctor> findAllWithStats () {
+    public List<Doctor> findAllWithStats() {
         List<Doctor> doctors = new ArrayList<>();
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT DOCTOR.*, count(RECIPE_ID) AS recipe_count " +
-                    "FROM DOCTOR LEFT JOIN RECIPE ON DOCTOR.DOCTOR_ID = RECIPE.DOCTOR_ID_REF GROUP BY DOCTOR_ID;");
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT DOCTOR.*, count(RECIPE_ID) AS recipe_count " +
+                            "FROM DOCTOR LEFT JOIN RECIPE ON DOCTOR.DOCTOR_ID " +
+                            "= RECIPE.DOCTOR_ID_REF GROUP BY DOCTOR_ID;");
             statement.execute();
             ResultSet rs = statement.getResultSet();
 
@@ -75,10 +76,12 @@ public class DoctorDao {
         return doctors;
     }
 
-    public Optional<Doctor> findById (long id) {
+    @Override
+    public Optional<Doctor> findById(long id) {
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM PUBLIC.DOCTOR WHERE DOCTOR_ID=?");
-            statement.setLong(1,id);
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT * FROM PUBLIC.DOCTOR WHERE DOCTOR_ID=?");
+            statement.setLong(1, id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
             rs.next();
@@ -88,18 +91,23 @@ public class DoctorDao {
         }
     }
 
-    public void save (Doctor doctor) {
+    @Override
+    public void save(Doctor doctor) {
         try {
             PreparedStatement statement;
-            if (doctor.getId() == GenericObject.getDEFAULT_ID() || !existsById(doctor.getId())) {
+            if (doctor.getId() == GenericObject.getDEFAULT_ID()
+                    || !existsById(doctor.getId())) {
                 statement = con.prepareStatement(
-                        "INSERT INTO PUBLIC.DOCTOR (NAME, SURNAME, MIDDLE_NAME, SPECIALIZATION) VALUES(?,?,?,?)");
+                        "INSERT INTO PUBLIC.DOCTOR (NAME, SURNAME, " +
+                                "MIDDLE_NAME, SPECIALIZATION) VALUES(?,?,?,?)");
             } else {
                 statement = con.prepareStatement(
-                        "UPDATE PUBLIC.DOCTOR SET NAME=?, SURNAME=?, MIDDLE_NAME=?, SPECIALIZATION=? WHERE DOCTOR_ID=?");
-                statement.setLong(5,doctor.getId());
+                        "UPDATE PUBLIC.DOCTOR SET NAME=?, SURNAME=?, " +
+                                "MIDDLE_NAME=?, SPECIALIZATION=? " +
+                                "WHERE DOCTOR_ID=?");
+                statement.setLong(5, doctor.getId());
             }
-            setupStatement(statement,doctor);
+            setupStatement(statement, doctor);
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -107,28 +115,37 @@ public class DoctorDao {
         }
     }
 
-    public void delete (Doctor doctor) {
+    @Override
+    public void delete(Doctor doctor)
+            throws SQLIntegrityConstraintViolationException {
         try {
             PreparedStatement statement = con.prepareStatement(
-                    "DELETE FROM PUBLIC.DOCTOR WHERE NAME=? AND SURNAME=? AND MIDDLE_NAME=? AND SPECIALIZATION=?");
-            setupStatement(statement,doctor);
+                    "DELETE FROM PUBLIC.DOCTOR WHERE NAME=? AND " +
+                            "SURNAME=? AND MIDDLE_NAME=? AND SPECIALIZATION=?");
+            setupStatement(statement, doctor);
             statement.execute();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new SQLIntegrityConstraintViolationException(e);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void setupStatement (PreparedStatement ps, Doctor doctor) throws SQLException {
-        ps.setString(1,doctor.getName());
-        ps.setString(2,doctor.getSurname());
-        ps.setString(3,doctor.getMiddleName());
-        ps.setString(4,doctor.getSpecialization());
+    private void setupStatement(PreparedStatement ps, Doctor doctor)
+            throws SQLException {
+        ps.setString(1, doctor.getName());
+        ps.setString(2, doctor.getSurname());
+        ps.setString(3, doctor.getMiddleName());
+        ps.setString(4, doctor.getSpecialization());
     }
 
-    public boolean existsById (long id) {
+    @Override
+    public boolean existsById(long id) {
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT count(DOCTOR_ID) FROM PUBLIC.DOCTOR WHERE DOCTOR_ID=?");
-            statement.setLong(1,id);
+            PreparedStatement statement = con.prepareStatement(
+                    "SELECT count(DOCTOR_ID) FROM PUBLIC.DOCTOR " +
+                            "WHERE DOCTOR_ID=?");
+            statement.setLong(1, id);
             statement.execute();
             ResultSet rs = statement.getResultSet();
             rs.next();

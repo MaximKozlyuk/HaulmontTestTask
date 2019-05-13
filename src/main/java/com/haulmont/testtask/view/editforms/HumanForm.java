@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend.editforms;
+package com.haulmont.testtask.view.editforms;
 
 import com.vaadin.data.Validator;
 import com.vaadin.ui.TextField;
@@ -11,7 +11,7 @@ class HumanForm extends FormButtons {
     private TextField surname = new TextField("Surname");
     private TextField middleName = new TextField("Middle name");
 
-    HumanForm () {
+    HumanForm() {
         super();
 
         name.setMaxLength(64);
@@ -23,8 +23,10 @@ class HumanForm extends FormButtons {
 
         Validator nameValidator = event -> {
             String str = (String) event;
-            str = str.replaceAll("\\s+","");
-            if (str.length() < 1) throw new Validator.InvalidValueException("empty name or surname");
+            str = str.replaceAll("\\s+", "");
+            if (str.length() < 1)
+                throw new Validator.InvalidValueException(
+                        "empty name or surname");
         };
 
         name.addValidator(nameValidator);
@@ -32,7 +34,7 @@ class HumanForm extends FormButtons {
 
     }
 
-    void validate () throws Validator.InvalidValueException {
+    void validate() throws Validator.InvalidValueException {
         name.validate();
         surname.validate();
     }

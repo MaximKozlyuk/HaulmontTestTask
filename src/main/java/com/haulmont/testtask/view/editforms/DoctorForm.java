@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend.editforms;
+package com.haulmont.testtask.view.editforms;
 
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.domain.Doctor;
@@ -8,6 +8,7 @@ import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.function.Consumer;
 
 public class DoctorForm extends HumanForm {
@@ -28,7 +29,8 @@ public class DoctorForm extends HumanForm {
 
         specialization.setMaxLength(256);
 
-        addComponents(getName(),getSurname(),getMiddleName(),specialization, getButtons());
+        addComponents(getName(),getSurname(),getMiddleName(),
+                specialization, getButtons());
     }
 
     public void setPojo (GenericObject pojo) {
@@ -53,7 +55,12 @@ public class DoctorForm extends HumanForm {
     }
 
     private void delete () {
-        dao.delete(pojo);
+        try {
+            dao.delete(pojo);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            Notification.show("cant delete doctor with recipes");
+            return;
+        }
         updateList.accept(null);
         setVisible(false);
     }

@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend.editforms;
+package com.haulmont.testtask.view.editforms;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
@@ -15,7 +15,7 @@ class FormButtons extends FormLayout {
 
     private HorizontalLayout buttons = new HorizontalLayout();
 
-    FormButtons () {
+    FormButtons() {
         setSizeUndefined();
         buttons.setSpacing(true);
         save.setStyleName(ValoTheme.BUTTON_PRIMARY);

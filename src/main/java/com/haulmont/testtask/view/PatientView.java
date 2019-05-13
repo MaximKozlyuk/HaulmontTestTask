@@ -1,8 +1,9 @@
-package com.haulmont.testtask.frontend;
+package com.haulmont.testtask.view;
 
 import com.haulmont.testtask.dao.PatientDao;
+import com.haulmont.testtask.domain.Doctor;
 import com.haulmont.testtask.domain.Patient;
-import com.haulmont.testtask.frontend.editforms.PatientForm;
+import com.haulmont.testtask.view.editforms.PatientForm;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
@@ -22,18 +23,20 @@ class PatientView extends VerticalLayout {
 
     private List<Patient> patients;
 
-    PatientView () {
+    PatientView() {
         grid.setColumns("id", "name", "surname", "middleName", "phoneNum");
         updatePatientsList(null);
 
         search.setInputPrompt("Search");
 
-        search.addTextChangeListener(event -> grid.setContainerDataSource(
-                new BeanItemContainer<>(Patient.class,
-                        patients.stream()
-                                .filter(patient -> patient.toString().contains(event.getText()))
-                                .collect(Collectors.toList()))
-        ));
+        search.addTextChangeListener(event -> {
+            BeanItemContainer container = new BeanItemContainer<>(Patient.class,
+                    patients.stream()
+                            .filter(patient -> patient.toString().
+                                    contains(event.getText()))
+                            .collect(Collectors.toList()));
+            grid.setContainerDataSource(container);
+        });
 
         Button clearFilter = new Button(FontAwesome.TIMES);
         clearFilter.addClickListener(click -> {
@@ -52,22 +55,23 @@ class PatientView extends VerticalLayout {
         search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
         search.addComponents(this.search, clearFilter);
 
-        HorizontalLayout tools = new HorizontalLayout(search,addBtn);
+        HorizontalLayout tools = new HorizontalLayout(search, addBtn);
         tools.setSpacing(true);
 
         //
-        HorizontalLayout body = new HorizontalLayout(grid,patientForm);
+        HorizontalLayout body = new HorizontalLayout(grid, patientForm);
         patientForm.setVisible(false);
         body.setSpacing(true);
         body.setSizeFull();
         grid.setSizeFull();
-        body.setExpandRatio(grid,1);
+        body.setExpandRatio(grid, 1);
 
         grid.addSelectionListener(event -> {
             if (event.getSelected().isEmpty()) {
                 patientForm.setVisible(false);
             } else {
-                Patient patient = (Patient) event.getSelected().iterator().next();
+                Patient patient = (Patient) event.getSelected()
+                        .iterator().next();
                 patientForm.setPojo(patient);
             }
         });
@@ -79,7 +83,8 @@ class PatientView extends VerticalLayout {
 
     private void updatePatientsList(Object o) {
         patients = patientDao.findAll();
-        grid.setContainerDataSource(new BeanItemContainer<>(Patient.class, patients));
+        grid.setContainerDataSource(
+                new BeanItemContainer<>(Patient.class, patients));
     }
 
 }

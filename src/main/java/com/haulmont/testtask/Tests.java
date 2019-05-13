@@ -10,6 +10,7 @@ import com.haulmont.testtask.domain.Priority;
 import com.haulmont.testtask.domain.Recipe;
 import org.junit.Test;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,7 +58,11 @@ public class Tests {
         Doctor doctor = dao.findById(1).get();
         System.out.println(doctor);
 
-        dao.delete(doctor);
+        try {
+            dao.delete(doctor);
+        } catch (SQLIntegrityConstraintViolationException e) {
+            e.printStackTrace();
+        }
 
         System.out.println("FIND ALL:");
         doctors = dao.findAll();

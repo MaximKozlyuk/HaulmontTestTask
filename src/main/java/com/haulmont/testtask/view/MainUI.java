@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend;
+package com.haulmont.testtask.view;
 
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
@@ -6,25 +6,9 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 
-/**
- * + Отображение списка пациентов
- * + Добавление нового пациента, редактирование и удаление существующего
- * + Отображение списка врачей
- * + Отображение статистической информации по количеству рецептов, выписанных врачами
- * + Добавление нового врача, редактирование и удаление существующего
- * + Отображения списка рецептов
- * Фильтрация списка рецептов по описанию, приоритету и пациенту
- * Добавление нового рецепта, редактирование и удаление существующего
- *
- * - Система должна иметь защиту на уровне БД от удаления пациента и врача, для которых существуют рецепты
- * - Все формы ввода должны валидировать данные в соответствии с их типом и допустимыми значениями
- */
-
-//@StyleSheet("frontend://styles/styles.css")
-//@PreserveOnRefresh
 @Theme(ValoTheme.THEME_NAME)
 @StyleSheet("vaadin://style.css")
-public class MainUI extends  UI {
+public class MainUI extends UI {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +32,7 @@ public class MainUI extends  UI {
 
     }
 
-    private void addHeader (AbstractOrderedLayout outerLayout) {
+    private void addHeader(AbstractOrderedLayout outerLayout) {
         Header header = new Header();
         header.getPatients().addClickListener(event -> {
             currentView.setVisible(false);
@@ -57,7 +41,7 @@ public class MainUI extends  UI {
         });
         header.getRecipes().addClickListener(event -> {
             currentView.setVisible(false);
-            if (recipeView == null ) {
+            if (recipeView == null) {
                 recipeView = new RecipeView();
                 layout.addComponent(recipeView);
             }
@@ -66,7 +50,7 @@ public class MainUI extends  UI {
         });
         header.getDocs().addClickListener(event -> {
             currentView.setVisible(false);
-            if (doctorView == null ) {
+            if (doctorView == null) {
                 doctorView = new DoctorView();
                 layout.addComponent(doctorView);
             }

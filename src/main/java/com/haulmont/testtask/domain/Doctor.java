@@ -22,7 +22,7 @@ public class Doctor extends Human implements Serializable {
         super(name, surname);
     }
 
-    public Doctor () {
+    public Doctor() {
         super("", "");
         setMiddleName("");
         specialization = "";

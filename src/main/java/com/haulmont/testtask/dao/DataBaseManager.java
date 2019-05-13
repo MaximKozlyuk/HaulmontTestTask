@@ -7,17 +7,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * Setting up database connection and executes creation script
+ */
 public class DataBaseManager {
 
     private static DataBaseManager ourInstance = new DataBaseManager();
 
-    public static DataBaseManager get() {
-        return ourInstance;
-    }
+    /**
+     * This path needs to be set correctly according to the file system
+     **/
+    private final String pathToCreationScript = "/Users/max/Desktop/" +
+            "test-task-master/src/main/resources/creation.sql";
 
-    private final String pathToCreationScript = "/Users/max/Desktop/test-task-master/src/main/resources/creation.sql";
-
-    private JDBCDataSource ds;
     private Connection conn;
 
     private DataBaseManager() {
@@ -26,7 +28,7 @@ public class DataBaseManager {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        ds = new JDBCDataSource();
+        JDBCDataSource ds = new JDBCDataSource();
         ds.setDatabaseName("testdb");
         ds.setPassword("");
         ds.setURL("jdbc:hsqldb:mem:testdb");
@@ -39,12 +41,16 @@ public class DataBaseManager {
         }
     }
 
-    //System.getProperty("file.separator");
+    public static DataBaseManager get() {
+        return ourInstance;
+    }
+
     private void executeCreationScript() {
         InputStream in;
         try {
             in = new FileInputStream(pathToCreationScript);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(in));
 
             String str = reader.readLine();
             StringBuilder script = new StringBuilder(str);
@@ -57,17 +63,12 @@ public class DataBaseManager {
                 PreparedStatement statement = conn.prepareStatement(s);
                 statement.execute();
             }
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    Connection getConnection () {
+    Connection getConnection() {
         return conn;
     }
 

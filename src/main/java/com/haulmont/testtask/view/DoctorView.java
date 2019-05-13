@@ -1,8 +1,8 @@
-package com.haulmont.testtask.frontend;
+package com.haulmont.testtask.view;
 
 import com.haulmont.testtask.dao.DoctorDao;
 import com.haulmont.testtask.domain.Doctor;
-import com.haulmont.testtask.frontend.editforms.DoctorForm;
+import com.haulmont.testtask.view.editforms.DoctorForm;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.*;
@@ -22,19 +22,21 @@ class DoctorView extends VerticalLayout {
 
     private List<Doctor> doctors;
 
-    DoctorView () {
-        grid.setColumns("id", "name", "surname", "middleName", "specialization", "recipeAmount");
+    DoctorView() {
+        grid.setColumns("id", "name", "surname", "middleName",
+                "specialization", "recipeAmount");
         updateDoctorList(null);
 
-        // search functionality and create button
         search.setInputPrompt("Search");
 
-        search.addTextChangeListener(event -> grid.setContainerDataSource(
-                new BeanItemContainer<>(Doctor.class,
-                        doctors.stream()
-                                .filter(doc -> doc.toString().contains(event.getText()))
-                                .collect(Collectors.toList()))
-        ));
+        search.addTextChangeListener(event -> {
+            BeanItemContainer container = new BeanItemContainer<>(Doctor.class,
+                    doctors.stream()
+                            .filter(doc -> doc.toString().
+                                    contains(event.getText()))
+                            .collect(Collectors.toList()));
+            grid.setContainerDataSource(container);
+        });
 
         Button clearFilter = new Button(FontAwesome.TIMES);
         clearFilter.addClickListener(click -> {
@@ -53,7 +55,7 @@ class DoctorView extends VerticalLayout {
         search.setStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
         search.addComponents(this.search, clearFilter);
 
-        HorizontalLayout tools = new HorizontalLayout(search,addBtn);
+        HorizontalLayout tools = new HorizontalLayout(search, addBtn);
         tools.setSpacing(true);
 
         //
@@ -62,7 +64,7 @@ class DoctorView extends VerticalLayout {
         body.setSpacing(true);
         body.setSizeFull();
         grid.setSizeFull();
-        body.setExpandRatio(grid,1);
+        body.setExpandRatio(grid, 1);
 
         grid.addSelectionListener(event -> {
             if (event.getSelected().isEmpty()) {
@@ -78,9 +80,10 @@ class DoctorView extends VerticalLayout {
         addComponents(tools, body);
     }
 
-    private void updateDoctorList (Object o) {
+    private void updateDoctorList(Object o) {
         doctors = doctorDao.findAllWithStats();
-        BeanItemContainer beanItemContainer = new BeanItemContainer<>(Doctor.class, doctors);
+        BeanItemContainer beanItemContainer
+                = new BeanItemContainer<>(Doctor.class, doctors);
         grid.setContainerDataSource(beanItemContainer);
     }
 

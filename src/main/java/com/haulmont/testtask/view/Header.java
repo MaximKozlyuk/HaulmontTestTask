@@ -1,4 +1,4 @@
-package com.haulmont.testtask.frontend;
+package com.haulmont.testtask.view;
 
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -14,7 +14,7 @@ class Header extends HorizontalLayout {
     private Button recipes = new Button("Recipes");
     private Button docs = new Button("Doctors");
 
-    Header () {
+    Header() {
         setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
         addStyleName("header");
         setWidth(100, Unit.PERCENTAGE);
