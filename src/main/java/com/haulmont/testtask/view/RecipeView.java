@@ -129,10 +129,12 @@ class RecipeView extends VerticalLayout implements Layout {
     }
 
     private void selectDoctor(Object o) {
+        patientSelectGrid.setVisible(false);
         docSelectorGrid.setVisible(true);
     }
 
     private void selectPatient(Object o) {
+        docSelectorGrid.setVisible(false);
         patientSelectGrid.setVisible(true);
     }
 

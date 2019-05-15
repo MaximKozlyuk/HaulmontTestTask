@@ -48,8 +48,8 @@ public class RecipeDao implements Dao<Recipe> {
         try {
             PreparedStatement statement = con.prepareStatement(
                     "SELECT * FROM RECIPE " +
-                    "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
-                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID");
+                            "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
+                            "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID");
             statement.execute();
             ResultSet rs = statement.getResultSet();
 
@@ -67,9 +67,9 @@ public class RecipeDao implements Dao<Recipe> {
         try {
             PreparedStatement statement = con.prepareStatement(
                     "SELECT * FROM RECIPE " +
-                    "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
-                    "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID " +
-                    "WHERE RECIPE.DOCTOR_ID_REF = ?");
+                            "JOIN PATIENT P ON RECIPE.PATIENT_ID_REF = P.PATIENT_ID " +
+                            "JOIN DOCTOR D ON RECIPE.DOCTOR_ID_REF = D.DOCTOR_ID " +
+                            "WHERE RECIPE.DOCTOR_ID_REF = ?");
             statement.setLong(1, id);
             statement.execute();
             ResultSet rs = statement.getResultSet();

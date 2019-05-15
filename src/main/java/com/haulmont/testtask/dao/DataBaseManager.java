@@ -17,8 +17,7 @@ public class DataBaseManager {
     /**
      * This path needs to be set correctly according to the file system
      **/
-    private final String pathToCreationScript = "/Users/max/Desktop/" +
-            "test-task-master/src/main/resources/creation.sql";
+    private final String pathToCreationScript = "/Users/max/IdeaProjects/TESTING_HAULMONT/src/main/resources/creation.sql";
 
     private Connection conn;
 

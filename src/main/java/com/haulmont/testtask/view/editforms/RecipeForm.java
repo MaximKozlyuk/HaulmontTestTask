@@ -56,6 +56,10 @@ public class RecipeForm extends FormButtons {
     }
 
     private void save() {
+        if (pojo.getCreation() == null || pojo.getExpired() == null) {
+            Notification.show("Choose date");
+            return;
+        }
         if (pojo.getDoctor() == null) {
             Notification.show("Choose doctor");
             return;
@@ -68,6 +72,8 @@ public class RecipeForm extends FormButtons {
             Notification.show("Wrong dates");
             return;
         }
+        if (pojo.getPriority() == null)
+            pojo.setPriority(Priority.NORMALEM);
         recipeDao.save(pojo);
         updateList.accept(null);
         setVisible(false);
